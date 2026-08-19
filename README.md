@@ -1,59 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌐 Sistema de Gestión ISP (Estilo WispHub)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este es un sistema minimalista y práctico desarrollado en **Laravel** para la administración de un Proveedor de Servicios de Internet (ISP). Permite registrar planes de velocidad, gestionar clientes, llevar el control de pagos mensuales y visualizar alertas de mora en un panel centralizado.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Características Implementadas
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+*   **Autenticación:** Sistema de login basado en Laravel Breeze (configurado actualmente para acceso por correo electrónico).
+*   **Dashboard Financiero:** Panel principal que calcula ingresos del mes actual, cuenta de clientes activos y alertas de pagos vencidos.
+*   **Gestión de Planes:** CRUD para crear paquetes de internet, definiendo velocidades de subida/bajada y precio.
+*   **Gestión de Clientes:** Registro de clientes asociados a un plan específico, día de facturación y asignación de IP. Generación automática de la primera factura al registrar.
+*   **Control de Caja (Pagos):** Listado general de facturas con insignias visuales de estado (Pagado, Pendiente, Atrasado). Procesamiento de pagos con un solo clic.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Requisitos del Sistema
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+*   PHP 8.2 o superior
+*   Composer
+*   Node.js y NPM (para compilar Tailwind CSS)
+*   Base de datos (MySQL, PostgreSQL o SQLite)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## ⚙️ Instrucciones de Instalación y Uso
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clonar o descargar el repositorio.**
+2. **Instalar dependencias de PHP:**
+   ```bash
+   composer install
 
-### Premium Partners
+   Instalar dependencias de Node y compilar estilos:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Bash
+npm install
+npm run build
+Configurar el entorno:
+Copia el archivo .env.example a .env y configura tus credenciales de base de datos.
 
-## Contributing
+Bash
+cp .env.example .env
+php artisan key:generate
+Ejecutar migraciones:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Bash
+php artisan migrate
+Levantar el servidor local:
 
-## Code of Conduct
+Bash
+php artisan serve
+🗄️ Estructura de la Base de Datos
+El sistema se basa en 4 entidades principales fuertemente relacionadas para mantener la integridad financiera y de los servicios.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Fragmento de código
+erDiagram
+    USERS {
+        id bigint PK
+        name varchar
+        email varchar "Login"
+        password varchar
+    }
+    
+    PLANS {
+        id bigint PK
+        name varchar "Ej: Básico 50 Megas"
+        download_speed int "Mbps"
+        upload_speed int "Mbps"
+        price decimal "Mensualidad"
+    }
 
-## Security Vulnerabilities
+    CLIENTS {
+        id bigint PK
+        document_number varchar "Único"
+        full_name varchar
+        phone varchar
+        address varchar
+        ip_address varchar "Para Mikrotik"
+        billing_day date "Día de corte"
+        status enum "active, suspended"
+        plan_id bigint FK
+    }
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    PAYMENTS {
+        id bigint PK
+        amount decimal
+        due_date date "Vencimiento"
+        paid_at datetime "Fecha real de pago"
+        status enum "pending, paid, late"
+        client_id bigint FK
+    }
 
-## License
+    PLANS ||--o{ CLIENTS : "asignado a"
+    CLIENTS ||--o{ PAYMENTS : "debe/paga"
+Notas Importantes para el Futuro:
+Mikrotik API: El sistema tiene el terreno preparado para conectar el PaymentController (método markAsPaid) con el servicio de RouterOS, permitiendo reactivar la conexión (ip_address) automáticamente tras un pago.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Facturación Automática: Pendiente configurar el Task Scheduling de Laravel (Comandos Cron) para generar facturas masivas mes a mes basadas en el billing_day del cliente.
+
+
+***
+
+Con esto tienes documentado todo tu progreso hasta este punto de forma profesional. 
