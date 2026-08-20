@@ -15,6 +15,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::post('/invoices/generate-daily', [DashboardController::class, 'generateDailyInvoices'])
+    ->name('invoices.generate-daily');
+
 Route::middleware('auth')->group(function () {
     // Panel Principal
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

@@ -3,6 +3,27 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Panel de Control ISP') }}
         </h2>
+
+        <!-- Botón para ejecutar la acción -->
+        <form action="{{ route('invoices.generate-daily') }}" method="POST" onsubmit="return confirm('¿Deseas procesar los cobros pendientes del día de hoy?');">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200">
+                ⚡ Generar Cobros del Día
+            </button>
+        </form>
+
+        <!-- Mensaje de confirmación -->
+        @if (session('success'))
+            <div class="mt-3 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ session('error') }}
+            </div>
+        @endif
     </x-slot>
 
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">

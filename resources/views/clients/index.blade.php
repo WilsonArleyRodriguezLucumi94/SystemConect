@@ -44,7 +44,8 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900 font-medium">{{ $client->plan->name }}</div>
-                                <div class="text-xs text-gray-500">{{ $client->ip_address ?? 'Sin IP' }}</div>
+                                {{-- Asumiendo que estás dentro de un foreach ($clients as $client) --}}
+                                {{ $client->ipAddress->ip_address ?? 'Sin IP asignada' }}
                             </td>
                             <td class="px-6 py-4">
                                 @if($client->status == 'active')

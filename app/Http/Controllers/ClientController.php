@@ -13,11 +13,11 @@ class ClientController extends Controller
 {
     public function index()
     {
-        // Cargamos los clientes junto con la información de su plan (Eager Loading)
-        $clients = Client::with('plan')->get();
+        // Eager Loading múltiple usando un arreglo
+        $clients = Client::with(['plan', 'ipAddress'])->get();
+        
         return view('clients.index', compact('clients'));
     }
-
     public function create()
     {
         $plans = Plan::all();
