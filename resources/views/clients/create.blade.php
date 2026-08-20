@@ -41,12 +41,20 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
-                        <!-- IP Asignada (Mikrotik) -->
+                        <!-- Selección de IP Disponible con Buscador -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Dirección IP (Mikrotik)</label>
-                            <input type="text" name="ip_address" placeholder="192.168.x.x"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <span class="text-xs text-gray-500">Opcional, pero necesario para cortes automáticos.</span>
+                            <label class="block text-sm font-medium text-gray-700">Dirección IP (Zona / VLAN)</label>
+                            
+                            <select id="ip-select" name="ip_address_id" placeholder="Escribe para buscar IP, Zona o VLAN..." autocomplete="off" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">Sin IP asignada</option>
+                                @foreach($ips as $ip)
+                                    <option value="{{ $ip->id }}">
+                                        {{ $ip->ip_address }} ({{ $ip->zone }} - VLAN: {{ $ip->vlan ?? 'N/A' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            
+                            <span class="text-xs text-gray-500">Puedes buscar por número de IP, nombre de la red o VLAN.</span>
                         </div>
 
                         <!-- Selección de Plan -->
@@ -80,4 +88,22 @@
             </div>
         </div>
     </div>
+
+
+
+    <!-- Agregamos los estilos y scripts de Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new TomSelect('#ip-select', {
+                create: false, // No permite crear IPs que no existan en la lista
+                sortField: {
+                    field: "text",
+                    direction: "asc" // Ordena alfabéticamente/numéricamente
+                }
+            });
+        });
+    </script>
 </x-app-layout>

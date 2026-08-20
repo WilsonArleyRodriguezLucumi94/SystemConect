@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('phone');
             $table->string('address');
-            $table->string('ip_address')->nullable(); // Útil para futura conexión con Mikrotik
+            //$table->string('ip_address')->nullable(); // Útil para futura conexión con Mikrotik
+            $table->foreignId('ip_address_id')->nullable()->constrained('ip_addresses')->nullOnDelete();
             $table->foreignId('plan_id')->constrained('plans');
             $table->date('billing_day'); // Día del mes en que se le cobra (ej. los 15 de cada mes)
             $table->enum('status', ['active', 'suspended'])->default('active');
