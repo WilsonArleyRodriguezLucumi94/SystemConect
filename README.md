@@ -101,3 +101,5 @@ Facturación Automática: Pendiente configurar el Task Scheduling de Laravel (Co
 ***
 
 Con esto tienes documentado todo tu progreso hasta este punto de forma profesional. 
+
+## prueba 1
