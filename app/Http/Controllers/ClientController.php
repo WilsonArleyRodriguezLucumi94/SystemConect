@@ -31,13 +31,19 @@ class ClientController extends Controller
     {
         $validated = $request->validate([
             'document_number' => 'required|unique:clients',
-            'full_name' => 'required|string|max:255',
-            'phone' => 'required|string',
-            'address' => 'required|string',
-            'ip_address_id' => 'nullable|exists:ip_addresses,id', // Cambió aquí
-            'plan_id' => 'required|exists:plans,id',
-            'billing_day' => 'required|date',
+            'full_name'       => 'required|string|max:255',
+            'phone'           => 'required|string',
+            'address'         => 'required|string',
+            'ip_address_id'   => 'nullable|exists:ip_addresses,id',
+            'plan_id'         => 'required|exists:plans,id',
+            'billing_day'     => 'required|date',
         ]);
+
+        // Parsear la fecha recibida
+        $date = \Carbon\Carbon::parse($request->billing_day);
+
+        // Extraer solo el número del día (ej. 21) para la tabla 'clients'
+        $validated['billing_day'] = $date->day; 
 
         $client = Client::create($validated);
 
@@ -46,11 +52,12 @@ class ClientController extends Controller
             IpAddress::find($client->ip_address_id)->update(['status' => 'assigned']);
         }
 
+        // Crear el pago con la fecha completa (ej. "2026-08-21")
         Payment::create([
             'client_id' => $client->id,
-            'amount' => $client->plan->price,
-            'due_date' => $client->billing_day,
-            'status' => 'pending'
+            'amount'    => $client->plan->price,
+            'due_date'  => $date->toDateString(), 
+            'status'    => 'pending'
         ]);
 
         return redirect()->route('clients.index')->with('success', 'Cliente registrado.');
