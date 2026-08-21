@@ -13,6 +13,8 @@ class Payment extends Model
         'due_date',
         'paid_at',
         'status',
+        'payment_method',
+        'proof_image',
     ];
 
     protected $casts = [
