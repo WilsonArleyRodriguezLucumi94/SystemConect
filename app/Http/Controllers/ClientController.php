@@ -71,7 +71,7 @@ class ClientController extends Controller
             'address' => 'required|string',
             'ip_address' => 'nullable|ip|unique:clients,ip_address,' . $client->id,
             'plan_id' => 'required|exists:plans,id',
-            'billing_day' => 'required|date',
+            //'billing_day' => 'required|date|between:1,31',
             'status' => 'required|in:active,suspended'
         ]);
 
