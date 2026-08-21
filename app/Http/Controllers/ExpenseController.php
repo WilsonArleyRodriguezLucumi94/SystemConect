@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Expense;
+use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
-    //
-
     public function index()
     {
-        $expenses = Expense::latest('expense_date')->paginate(15);
+        $expenses = Expense::with('user')->latest('expense_date')->paginate(15);
         $totalExpenses = Expense::sum('amount');
 
         return view('expenses.index', compact('expenses', 'totalExpenses'));
+    }
+
+    public function create()
+    {
+        return view('expenses.create');
     }
 
     public function store(Request $request)
@@ -33,9 +36,29 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.index')->with('success', 'Gasto registrado correctamente.');
     }
 
+    public function edit(Expense $expense)
+    {
+        return view('expenses.edit', compact('expense'));
+    }
+
+    public function update(Request $request, Expense $expense)
+    {
+        $validated = $request->validate([
+            'description'  => 'required|string|max:255',
+            'amount'       => 'required|numeric|min:0.01',
+            'category'     => 'nullable|string|max:100',
+            'expense_date' => 'required|date',
+        ]);
+
+        $expense->update($validated);
+
+        return redirect()->route('expenses.index')->with('success', 'Gasto actualizado correctamente.');
+    }
+
     public function destroy(Expense $expense)
     {
         $expense->delete();
-        return redirect()->route('expenses.index')->with('success', 'Gasto eliminado.');
+
+        return redirect()->route('expenses.index')->with('success', 'Gasto eliminado correctamente.');
     }
 }

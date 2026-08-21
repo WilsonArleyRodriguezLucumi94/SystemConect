@@ -104,7 +104,10 @@
             <!-- Gastos Registrados por Usuario -->
             <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200 bg-red-50 flex items-center justify-between">
-                    <h3 class="font-bold text-red-800 text-base">💸 Gastos Registrados por Usuario</h3>
+                    
+                    <x-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
+                        <h3 class="font-bold text-red-800 text-base">💸 Gastos Registrados por Usuario</h3>
+                    </x-nav-link>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
