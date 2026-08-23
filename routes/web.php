@@ -7,6 +7,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\RouterController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,4 +50,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
 });
 
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('routers', RouterController::class)->except(['create', 'show', 'edit']);
+});
 require __DIR__.'/auth.php';

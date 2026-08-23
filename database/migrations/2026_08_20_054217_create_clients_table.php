@@ -28,6 +28,7 @@ return new class extends Migration
             $table->date('next_due_date')->nullable();  // Fecha exacta del próximo cobro
             
             $table->string('status')->default('active');
+            $table->foreignId('router_id')->nullable()->constrained('routers')->nullOnDelete();
             $table->timestamps();
         });
     }

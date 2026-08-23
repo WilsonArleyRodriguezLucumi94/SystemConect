@@ -19,7 +19,7 @@ class PaymentController extends Controller
         return view('payments.index', compact('payments', 'users'));
     }
 
-    public function pay(Request $request, Payment $payment, RouterService $router)
+    public function pay(Request $request, Payment $payment, RouterService $routerService)
     {
         $request->validate([
             'user_id'        => 'required|exists:users,id',
@@ -46,18 +46,21 @@ class PaymentController extends Controller
             'proof_image'    => $proofPath,
         ]);
 
-        // Reconexión automática en MikroTik
-        $client = $payment->client;
+        // Cargar el cliente con sus relaciones ipAddress y router
+        $client = $payment->client()->with(['ipAddress', 'router'])->first();
 
         if ($client) {
             $client->update(['status' => 'active']);
 
-            if ($client->ipAddress) {
+            // Verificar que tenga tanto IP como Router asignados
+            if ($client->ipAddress && $client->router) {
                 try {
-                    $router->activarIp($client->ipAddress->ip_address);
+                    $routerService->activarIp($client->ipAddress->ip_address, $client->router);
                 } catch (\Exception $e) {
-                    Log::error("Error al reconectar IP {$client->ipAddress->ip_address} en MikroTik: " . $e->getMessage());
+                    Log::error("Error al reconectar IP {$client->ipAddress->ip_address} en router '{$client->router->name}': " . $e->getMessage());
                 }
+            } else {
+                Log::warning("El cliente '{$client->full_name}' no tiene IP o Router asignado.");
             }
         }
 

@@ -18,6 +18,7 @@ class Client extends Model
         'address',
         'plan_id',
         'ip_address_id',
+        'router_id',
         'company_equipment_id',
         'billing_day',
         'next_due_date',
@@ -49,5 +50,10 @@ class Client extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function router()
+    {
+        return $this->belongsTo(Router::class);
     }
 }

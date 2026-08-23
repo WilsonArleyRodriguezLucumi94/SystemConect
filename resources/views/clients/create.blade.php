@@ -75,6 +75,19 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <span class="text-xs text-gray-500">A partir de este día se generarán las facturas mensuales.</span>
                         </div>
+                        <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="router_id">
+                                    Router / Nodo Asignado
+                                </label>
+                                <select name="router_id" id="router_id" required class="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <option value="">-- Seleccione un Router --</option>
+                                    @foreach($routers as $router)
+                                        <option value="{{ $router->id }}" {{ old('router_id') == $router->id ? 'selected' : '' }}>
+                                            {{ $router->name }} ({{ $router->ip_address }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                     </div>
 
                     <div class="mt-6 flex justify-end">

@@ -2,52 +2,60 @@
 
 namespace App\Services;
 
+use App\Models\Router;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class RouterService
 {
-    protected string $url;
-    protected string $user;
-    protected string $pass;
-
-    public function __construct()
-    {
-        $host       = env('MIKROTIK_HOST', '10.100.100.2');
-        $this->url  = "http://{$host}/rest";
-        $this->user = (string) env('MIKROTIK_USER', 'admin');
-        $this->pass = (string) env('MIKROTIK_PASS', 'g3st10n21cauc4');
-    }
-
     /**
-     * Agrega una IP a la lista de SUSPENDIDOS (Corte)
+     * Agrega una IP a la lista de SUSPENDIDOS en un MikroTik específico
      */
-    public function suspenderIp(string $ip): void
+    public function suspenderIp(string $ip, Router $router): void
     {
-        Http::withBasicAuth($this->user, $this->pass)
-            ->put("{$this->url}/ip/firewall/address-list", [
+        $url = "http://{$router->ip_address}/rest/ip/firewall/address-list";
+
+        $response = Http::timeout(10)
+            ->withBasicAuth($router->username, $router->password)
+            ->put($url, [
                 'list'    => 'SUSPENDIDOS',
                 'address' => $ip,
                 'comment' => 'Corte Automático por Mora',
             ]);
+
+        if ($response->failed()) {
+            Log::error("Error al suspender la IP {$ip} en el router '{$router->name}': " . $response->body());
+        }
     }
 
     /**
-     * Elimina una IP de la lista de SUSPENDIDOS (Reconexión)
+     * Elimina una IP de la lista de SUSPENDIDOS en un MikroTik específico
      */
-    public function activarIp(string $ip): void
+    public function activarIp(string $ip, Router $router): void
     {
-        $response = Http::withBasicAuth($this->user, $this->pass)
-            ->get("{$this->url}/ip/firewall/address-list", [
+        $baseUrl = "http://{$router->ip_address}/rest/ip/firewall/address-list";
+
+        // Buscar el ID del registro de la IP en la lista de SUSPENDIDOS
+        $response = Http::timeout(10)
+            ->withBasicAuth($router->username, $router->password)
+            ->get($baseUrl, [
                 'address' => $ip,
                 'list'    => 'SUSPENDIDOS',
             ]);
 
-        $items = $response->json();
+        if ($response->successful()) {
+            $items = $response->json();
 
-        if (!empty($items)) {
-            $id = $items[0]['.id'];
-            Http::withBasicAuth($this->user, $this->pass)
-                ->delete("{$this->url}/ip/firewall/address-list/{$id}");
+            if (!empty($items)) {
+                foreach ($items as $item) {
+                    $id = $item['.id'];
+                    Http::timeout(10)
+                        ->withBasicAuth($router->username, $router->password)
+                        ->delete("{$baseUrl}/{$id}");
+                }
+            }
+        } else {
+            Log::error("Error al buscar la IP {$ip} para reconexión en '{$router->name}': " . $response->body());
         }
     }
 }
