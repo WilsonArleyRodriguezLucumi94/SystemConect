@@ -15,9 +15,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Documento -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">N° de Documento</label>
-                            <input type="text" name="document_number" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <label for="document_number" class="block text-sm font-medium text-gray-700">N° de Documento</label>
+                            <input type="text" 
+                                name="document_number" 
+                                id="document_number" 
+                                value="{{ old('document_number') }}" 
+                                required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('document_number') border-red-500 @enderror">
+                            
+                            @error('document_number')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Nombre Completo -->

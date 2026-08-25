@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('clients');
+            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->decimal('amount', 10, 2);
-            $table->date('due_date'); // Fecha límite de pago
-            $table->date('paid_at')->nullable(); // Cuándo pagó realmente
-            $table->enum('status', ['pending', 'paid', 'late'])->default('pending');
+            $table->string('payment_method')->nullable();
+            $table->string('proof_image')->nullable();
+            $table->dateTime('due_date');
+            $table->dateTime('paid_at')->nullable();
+            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }

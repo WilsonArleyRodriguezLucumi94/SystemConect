@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <!-- Contenedor Alpine.js para gestionar el estado del Modal -->
-    <div x-data="{ openModal: false, paymentId: null, clientName: '', amount: '' }" class="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <!-- Contenedor Alpine.js con nextDueDate en el estado -->
+    <div x-data="{ openModal: false, paymentId: null, clientName: '', amount: '', nextDueDate: '' }" class="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
         @if (session('success'))
             <div class="p-4 bg-green-100 border border-green-400 text-green-700 rounded-md text-sm">
@@ -76,6 +76,7 @@
                                                 paymentId = {{ $payment->id }}; 
                                                 clientName = '{{ addslashes($payment->client->full_name ?? '') }}'; 
                                                 amount = '{{ number_format($payment->amount, 2) }}';
+                                                nextDueDate = '{{ \Carbon\Carbon::parse($payment->due_date)->addMonth()->format('Y-m-d') }}';
                                             "
                                             class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded text-xs shadow-sm transition">
                                             Registrar Pago
@@ -148,6 +149,18 @@
                             <option value="Bancolombia">Cuenta Bancolombia</option>
                             <option value="Transferencia Bancaria">Otra Transferencia Bancaria</option>
                         </select>
+                    </div>
+
+                    <!-- Próxima Fecha de Vencimiento -->
+                    <div>
+                        <label for="next_due_date" class="block text-sm font-medium text-gray-700">Próxima Fecha de Vencimiento</label>
+                        <input type="date" 
+                               name="next_due_date" 
+                               id="next_due_date" 
+                               x-model="nextDueDate"
+                               required
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                        <p class="mt-1 text-xs text-gray-500">Puedes modificar la fecha manualmente si el cliente requiere un ajuste.</p>
                     </div>
 
                     <!-- Foto / Comprobante -->
