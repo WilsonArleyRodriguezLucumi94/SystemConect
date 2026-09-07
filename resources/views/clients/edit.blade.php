@@ -61,8 +61,13 @@
                         </div>
 
                         <div>
-                            <label for="billing_day" class="block text-sm font-medium text-gray-700">Día de Corte / Facturación</label>
-                            <input type="date" name="billing_day" id="billing_day" value="{{ old('billing_day', $client->billing_day) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            <label for="next_due_date" class="block text-sm font-medium text-gray-700">Día de Corte / Facturación</label>
+                            <input type="date" 
+                                name="next_due_date" 
+                                id="next_due_date" 
+                                value="{{ old('next_due_date', $client->next_due_date ? \Carbon\Carbon::parse($client->next_due_date)->format('Y-m-d') : '') }}" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
+                                required>
                         </div>
 
                         <div>
