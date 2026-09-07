@@ -11,13 +11,24 @@ use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
-    public function index()
-    {
-        $payments = Payment::with(['client', 'user'])->latest()->paginate(15);
-        $users = User::all();
+    public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        return view('payments.index', compact('payments', 'users'));
-    }
+    $payments = Payment::with(['client', 'user'])
+        ->when($search, function ($query, $search) {
+            $query->whereHas('client', function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%");
+            });
+        })
+        ->latest()
+        ->paginate(15)
+        ->withQueryString();
+
+    $users = User::all();
+
+    return view('payments.index', compact('payments', 'users'));
+}
 
     public function pay(Request $request, Payment $payment, RouterService $routerService)
 {
