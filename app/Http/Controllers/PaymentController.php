@@ -30,51 +30,36 @@ class PaymentController extends Controller
     return view('payments.index', compact('payments', 'users'));
 }
 
-    public function pay(Request $request, Payment $payment, RouterService $routerService)
-{
-    $request->validate([
-        'user_id'        => 'required|exists:users,id',
-        'payment_method' => 'required|string|max:100',
-        'next_due_date'  => 'required|date', // Fecha del próximo vencimiento seleccionada por el usuario
-        'proof_image'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-    ]);
+    public function pay(Request $request, Payment $payment)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'user_id' => 'required|exists:users,id',
+            'payment_method' => 'required|string',
+            'next_due_date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048',
+        ]);
 
-    $proofPath = $payment->proof_image;
-
-    if ($request->hasFile('proof_image')) {
-        if ($proofPath && Storage::disk('public')->exists($proofPath)) {
-            Storage::disk('public')->delete($proofPath);
+        // Guardar la imagen si fue adjuntada
+        $proofPath = null;
+        if ($request->hasFile('proof_image')) {
+            $proofPath = $request->file('proof_image')->store('proofs', 'public');
         }
-        $proofPath = $request->file('proof_image')->store('receipts', 'public');
-    }
 
-    // Marcar el pago actual como pagado
-    $payment->update([
-        'status'         => 'paid',
-        'paid_at'        => now(),
-        'user_id'        => $request->user_id,
-        'payment_method' => $request->payment_method,
-        'proof_image'    => $proofPath,
-    ]);
+        // Actualizar el registro del pago actual con el nuevo monto ingresado
+        $payment->update([
+            'amount' => $request->amount,
+            'status' => 'paid',
+            'user_id' => $request->user_id,
+            'payment_method' => $request->payment_method,
+            'proof_image' => $proofPath ?? $payment->proof_image,
+        ]);
 
-    $client = $payment->client()->with(['ipAddress', 'router'])->first();
-
-    if ($client) {
-        // Reactivar cliente y actualizar su próxima fecha de cobro
-        $client->update([
-            'status'        => 'active',
+        // Actualizar la fecha de próximo vencimiento en el cliente
+        $payment->client->update([
             'next_due_date' => $request->next_due_date,
         ]);
 
-        if ($client->ipAddress && $client->router) {
-            try {
-                $routerService->activarIp($client->ipAddress->ip_address, $client->router);
-            } catch (\Exception $e) {
-                Log::error("Error al reconectar IP {$client->ipAddress->ip_address}: " . $e->getMessage());
-            }
-        }
+        return redirect()->route('payments.index')->with('success', 'Pago registrado correctamente.');
     }
-
-    return redirect()->back()->with('success', '¡Pago registrado y fecha de cobro actualizada!');
-}
 }

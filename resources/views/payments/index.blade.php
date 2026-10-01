@@ -106,7 +106,7 @@
                                                 openModal = true; 
                                                 paymentId = {{ $payment->id }}; 
                                                 clientName = '{{ addslashes($payment->client->full_name ?? '') }}'; 
-                                                amount = '{{ number_format($payment->amount, 2) }}';
+                                                amount = '{{ $payment->amount }}'; 
                                                 nextDueDate = '{{ \Carbon\Carbon::parse($payment->due_date)->addMonth()->format('Y-m-d') }}';
                                             "
                                             class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded text-xs shadow-sm transition">
@@ -153,9 +153,32 @@
                 <form :action="'/payments/' + paymentId + '/pay'" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
                     @csrf
 
+                    <!-- Nombre del Cliente -->
+                    <div class="bg-gray-50 p-3 rounded-md border border-gray-200">
+                        <p class="text-xs text-gray-500 uppercase font-semibold">Cliente</p>
+                        <p class="text-sm font-bold text-gray-800" x-text="clientName"></p>
+                    </div>
+
+                    <!-- Campo Editable: Monto a Cobrar -->
                     <div>
-                        <p class="text-sm text-gray-500">Cliente: <strong x-text="clientName" class="text-gray-800"></strong></p>
-                        <p class="text-sm text-gray-500">Monto a Cobrar: <strong x-text="'$' + amount" class="text-green-600"></strong></p>
+                        <label for="amount" class="block text-sm font-medium text-gray-700">Monto a Cobrar ($) *</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0"
+                                name="amount" 
+                                id="amount" 
+                                x-model="amount" 
+                                required 
+                                class="block w-full rounded-md border-gray-300 pl-7 pr-3 focus:border-indigo-500 focus:ring-indigo-500 text-sm font-bold text-green-700"
+                                placeholder="0.00"
+                            >
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Puedes modificar el valor si el cliente realiza un pago parcial o diferente.</p>
                     </div>
 
                     <!-- Usuario que recibe el dinero -->
@@ -186,11 +209,11 @@
                     <div>
                         <label for="next_due_date" class="block text-sm font-medium text-gray-700">Próxima Fecha de Vencimiento</label>
                         <input type="date" 
-                               name="next_due_date" 
-                               id="next_due_date" 
-                               x-model="nextDueDate"
-                               required
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                            name="next_due_date" 
+                            id="next_due_date" 
+                            x-model="nextDueDate"
+                            required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                         <p class="mt-1 text-xs text-gray-500">Puedes modificar la fecha manualmente si el cliente requiere un ajuste.</p>
                     </div>
 
