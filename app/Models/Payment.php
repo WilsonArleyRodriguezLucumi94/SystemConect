@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Carbon;
 class Payment extends Model
 {
     protected $fillable = [
@@ -29,5 +29,18 @@ class Payment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getRealStatusAttribute(): string
+    {
+        if ($this->status === 'paid') {
+            return 'paid';
+        }
+
+        if ($this->due_date && Carbon::parse($this->due_date)->lt(Carbon::today())) {
+            return 'overdue'; // Vencido
+        }
+
+        return 'pending'; // Pendiente
     }
 }

@@ -78,6 +78,10 @@
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                             Pagado
                                         </span>
+                                    @elseif(\Carbon\Carbon::parse($payment->due_date)->lt(\Carbon\Carbon::today()))
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                            Vencido
+                                        </span>
                                     @else
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
                                             Pendiente
