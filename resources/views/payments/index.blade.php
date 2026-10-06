@@ -68,7 +68,7 @@
                                     {{ $payment->client->full_name ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 text-gray-600">
-                                    {{ $payment->due_date }}
+                                    {{ \Carbon\Carbon::parse($payment->due_date)->format('Y-m-d') }}
                                 </td>
                                 <td class="px-6 py-4 text-right font-bold text-gray-800">
                                     ${{ number_format($payment->amount, 2) }}
@@ -111,7 +111,7 @@
                                                 paymentId = {{ $payment->id }}; 
                                                 clientName = '{{ addslashes($payment->client->full_name ?? '') }}'; 
                                                 amount = '{{ $payment->amount }}'; 
-                                                nextDueDate = '{{ \Carbon\Carbon::parse($payment->due_date)->addMonth()->format('Y-m-d') }}';
+                                                nextDueDate = '{{ \Carbon\Carbon::parse($payment->due_date)->lt(\Carbon\Carbon::today()) ? \Carbon\Carbon::now()->addMonth()->format('Y-m-d') : \Carbon\Carbon::parse($payment->due_date)->addMonth()->format('Y-m-d') }}';
                                             "
                                             class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded text-xs shadow-sm transition">
                                             Registrar Pago
