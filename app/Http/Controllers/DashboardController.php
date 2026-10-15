@@ -18,7 +18,8 @@ class DashboardController extends Controller
         $currentYear = Carbon::now()->year;
 
         // 1. Totales Históricos Globales
-        $totalIncome = Payment::whereNotNull('user_id')
+        $totalIncome = Payment::withoutGlobalScopes()
+                                ->whereNotNull('user_id')
                                 ->sum('amount');
         dd($totalIncome);
         $totalExpenses = Expense::sum('amount');
