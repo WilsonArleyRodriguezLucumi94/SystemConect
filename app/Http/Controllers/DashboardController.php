@@ -19,7 +19,6 @@ class DashboardController extends Controller
 
         // 1. Totales Históricos Globales
         $totalIncome = Payment::whereNotNull('user_id')
-                                ->where('status', 'paid')
                                 ->sum('amount');
         dd($totalIncome);
         $totalExpenses = Expense::sum('amount');
