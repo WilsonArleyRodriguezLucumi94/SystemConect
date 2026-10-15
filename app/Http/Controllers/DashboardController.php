@@ -1,12 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use App\Models\Client;
+use App\Models\Expense;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Expense;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class DashboardController extends Controller
         // 1. Totales Históricos Globales
         $totalIncome = Payment::where('status', 'paid')->sum('amount');
         $totalExpenses = Expense::sum('amount');
-        $totalNetBalance = $totalIncome - $totalExpenses;
+        $totalNetBalance = $totalIncome - $totalExpenses; // Resta corregida
 
         // 2. Totales del Mes Actual
         $monthlyIncome = Payment::whereMonth('paid_at', $currentMonth)
@@ -32,7 +32,7 @@ class DashboardController extends Controller
                                   ->whereYear('expense_date', $currentYear)
                                   ->sum('amount');
 
-        $monthlyNetBalance = $monthlyIncome - $monthlyExpenses;
+        $monthlyNetBalance = $monthlyIncome - $monthlyExpenses; // Resta corregida
 
         // 3. Ingresos agrupados por Usuario / Cobrador
         $incomeByUser = Payment::with('user')

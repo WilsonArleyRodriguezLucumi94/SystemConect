@@ -36,7 +36,7 @@
             <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
                 <h3 class="text-gray-500 text-xs font-bold uppercase">Ingresos Totales</h3>
                 <p class="text-2xl font-black text-green-600 mt-1">${{ number_format($totalIncome ?? 0, 2) }}</p>
-                <p class="text-xs text-gray-400 mt-1">Este mes: ${{ number_format($monthlyIncome, 2) }}</p>
+                <p class="text-xs text-gray-400 mt-1">Este mes: ${{ number_format($monthlyIncome ?? 0, 2) }}</p>
             </div>
 
             <!-- Gastos Totales / Mes -->
