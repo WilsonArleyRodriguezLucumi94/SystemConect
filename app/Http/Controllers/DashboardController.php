@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $totalIncome = Payment::withoutGlobalScopes()
                                 ->whereNotNull('user_id')
                                 ->sum('amount');
-        dd($totalIncome);
+        //dd($totalIncome);
         $totalExpenses = Expense::sum('amount');
         $totalNetBalance = $totalIncome - $totalExpenses; // Resta corregida
 
